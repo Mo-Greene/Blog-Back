@@ -1,0 +1,15 @@
+server:
+  servlet:
+    context-path: /v1
+
+spring:
+  profiles:
+    include: dev
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
