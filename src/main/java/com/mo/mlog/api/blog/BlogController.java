@@ -3,6 +3,7 @@ package com.mo.mlog.api.blog;
 import org.springframework.web.bind.annotation.*;
 
 import com.mo.mlog.api.blog.dto.request.PostRequest;
+import com.mo.mlog.api.blog.dto.request.SearchPostRequest;
 import com.mo.mlog.common.response.CommonResponse;
 
 import jakarta.validation.Valid;
@@ -16,12 +17,12 @@ public class BlogController {
 	private final BlogService blogService;
 
 	/**
-	 * 게시글 전체조회
+	 * 게시글 전체조회 no offset pagination
 	 */
 	@GetMapping
-	public CommonResponse<?> getPost() {
+	public CommonResponse<?> getPost(SearchPostRequest request) {
 
-		return CommonResponse.ok(blogService.getPostList());
+		return CommonResponse.ok(blogService.getPostList(request));
 	}
 
 	/**

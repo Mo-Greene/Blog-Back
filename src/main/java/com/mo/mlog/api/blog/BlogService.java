@@ -1,6 +1,7 @@
 package com.mo.mlog.api.blog;
 
 import com.mo.mlog.api.blog.dto.request.PostRequest;
+import com.mo.mlog.api.blog.dto.request.SearchPostRequest;
 import com.mo.mlog.api.blog.dto.response.DetailPostResponse;
 import com.mo.mlog.api.blog.dto.response.ListPostResponse;
 import com.mo.mlog.common.exception.EntityException;
@@ -23,14 +24,14 @@ public class BlogService {
 	private final TagRepository tagRepository;
 	private final PostRepository postRepository;
 
-	// TODO: 2024-07-14 Mo-Greene : 게시글 전체조회 검색조건 추후 + 무한스크롤 형식!
 	/**
-	 * 게시글 전체조회
+	 * 게시글 전체조회 no offset 페이지네이션
 	 */
 	@Transactional(readOnly = true)
-	public List<ListPostResponse> getPostList() {
+	public List<ListPostResponse> getPostList(SearchPostRequest request) {
 
-		return postRepository.getPostList();
+
+		return postRepository.getPostList(request);
 	}
 
 	/**
