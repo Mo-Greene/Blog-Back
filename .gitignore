@@ -1,6 +1,6 @@
 application-dev.yml
+application-aws.yml
 
-README.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
