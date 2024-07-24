@@ -1,5 +1,7 @@
 package com.mo.mlog.api.blog;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import com.mo.mlog.api.blog.dto.request.PostRequest;
@@ -20,9 +22,9 @@ public class BlogController {
 	 * 게시글 전체조회 no offset pagination
 	 */
 	@GetMapping
-	public CommonResponse<?> getPost(SearchPostRequest request) {
+	public CommonResponse<?> getPost(@PageableDefault(size = 20) Pageable pageable, SearchPostRequest request) {
 
-		return CommonResponse.ok(blogService.getPostList(request));
+		return CommonResponse.ok(blogService.getPostList(pageable, request));
 	}
 
 	/**

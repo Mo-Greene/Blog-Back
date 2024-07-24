@@ -6,6 +6,8 @@ import static com.mo.mlog.persistence.tag.QTag.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+
 import com.mo.mlog.api.blog.dto.request.SearchPostRequest;
 import com.mo.mlog.api.blog.dto.response.DetailPostResponse;
 import com.mo.mlog.api.blog.dto.response.ListPostResponse;
@@ -24,7 +26,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 	 * 게시글 전체조회
 	 */
 	@Override
-	public List<ListPostResponse> getPostList(SearchPostRequest request) {
+	public List<ListPostResponse> getPostList(Pageable pageable, SearchPostRequest request) {
 
 		return factory
 			.select(Projections.constructor(ListPostResponse.class,
@@ -42,7 +44,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 				searchTagId(request.tagId()),
 				searchTitle(request.title())
 			)
-			.orderBy(post.createdAt.desc())
+			.orderBy(post.id.desc())
+			.limit(pageable.getPageSize())
 			.fetch();
 	}
 

@@ -10,6 +10,8 @@ import com.mo.mlog.persistence.post.PostRepository;
 import com.mo.mlog.persistence.tag.Tag;
 import com.mo.mlog.persistence.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +30,10 @@ public class BlogService {
 	 * 게시글 전체조회 no offset 페이지네이션
 	 */
 	@Transactional(readOnly = true)
-	public List<ListPostResponse> getPostList(SearchPostRequest request) {
+	public List<ListPostResponse> getPostList(Pageable pageable, SearchPostRequest request) {
 
 
-		return postRepository.getPostList(request);
+		return postRepository.getPostList(pageable, request);
 	}
 
 	/**

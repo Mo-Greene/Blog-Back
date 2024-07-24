@@ -18,12 +18,12 @@ import lombok.Getter;
 public abstract class AbstractEntity {
 
 	@CreatedDate
-	@Column(updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	@Comment("등록일")
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	@Comment("최종 수정일")
 	private LocalDateTime updatedAt;
 }

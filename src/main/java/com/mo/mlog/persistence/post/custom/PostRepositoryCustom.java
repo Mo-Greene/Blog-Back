@@ -7,9 +7,11 @@ import com.mo.mlog.api.blog.dto.response.ListPostResponse;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+
 public interface PostRepositoryCustom {
 
-	List<ListPostResponse> getPostList(SearchPostRequest request);
+	List<ListPostResponse> getPostList(Pageable pageable, SearchPostRequest request);
 
 	Optional<DetailPostResponse> findPostDetail(Long postId);
 
