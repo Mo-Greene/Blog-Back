@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -14,15 +15,24 @@ public class FileService {
 
 	private final AmazonS3Client amazonS3Client;
 
+	private static final long EXPIRE_TIME = 1000 * 60 * 10;
+	private static final String BUCKET_BOARD = "board/";
+
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
-	public String generatePresignedUrlForGet(String objectKey) {
+	/**
+	 * 프리사인드 url 작성
+	 */
+	public String generatePresignedUrlForPut() {
+
 		Date expiration = new Date();
 		long expireTime = expiration.getTime();
-		expireTime += 1000 * 60 * 10;
+		expireTime += EXPIRE_TIME;
 		expiration.setTime(expireTime);
 
-		return amazonS3Client.generatePresignedUrl(bucket, objectKey, expiration, HttpMethod.GET).toString();
+		String objectKey = BUCKET_BOARD + UUID.randomUUID();
+
+		return amazonS3Client.generatePresignedUrl(bucket, objectKey, expiration, HttpMethod.PUT).toString();
 	}
 }

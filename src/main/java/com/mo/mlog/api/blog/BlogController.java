@@ -44,7 +44,7 @@ public class BlogController {
 	 * @param request 게시글 정보
 	 */
 	@PostMapping
-	public CommonResponse<?> savePost(@RequestBody @Valid PostRequest request) {
+	public CommonResponse<?> savePost(@Valid PostRequest request) {
 
 		blogService.savePost(request);
 		return CommonResponse.ok();

@@ -1,5 +1,9 @@
 package com.mo.mlog.api.blog;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.mo.mlog.api.blog.dto.request.PostRequest;
 import com.mo.mlog.api.blog.dto.request.SearchPostRequest;
 import com.mo.mlog.api.blog.dto.response.DetailPostResponse;
@@ -10,12 +14,17 @@ import com.mo.mlog.persistence.post.PostRepository;
 import com.mo.mlog.persistence.tag.Tag;
 import com.mo.mlog.persistence.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static com.mo.mlog.common.util.PreviewTextUtil.previewText;
 
@@ -25,6 +34,12 @@ public class BlogService {
 
 	private final TagRepository tagRepository;
 	private final PostRepository postRepository;
+	private final AmazonS3Client amazonS3Client;
+
+	@Value("${cloud.aws.s3.bucket}")
+	private String bucket;
+
+	private static final String BUCKET_THUMBNAIL = "thumbnail/";
 
 	/**
 	 * 게시글 전체조회 no offset 페이지네이션
@@ -57,12 +72,16 @@ public class BlogService {
 
 		Tag tag = tagRepository.findById(request.tagId()).orElseThrow(EntityException::new);
 
+		MultipartFile file = request.thumbnail();
+		String thumbnail = uploadFile(file);
+
 		Post post = Post.builder()
 			.title(request.title())
 			.content(request.content())
 			.plainContent(request.plainContent())
 			.preview(previewText(request.plainContent()))
 			.tag(tag)
+			.thumbnail(thumbnail)
 			.build();
 
 		postRepository.save(post);
@@ -81,9 +100,26 @@ public class BlogService {
 		post.updatePost(request);
 	}
 
-	// TODO: 2024-07-14 Mo-Greene : 게시글 삭제
+	/**
+	 * 파일 업로드
+	 *
+	 * @param file 썸네일
+	 */
+	private String uploadFile(MultipartFile file) {
 
-	// TODO: 2024-07-15 Mo-Greene : 이미지 업로드
+		String name = String.valueOf(UUID.randomUUID());
+		ObjectMetadata objectMetadata = new ObjectMetadata();
+		objectMetadata.setContentLength(file.getSize());
+		objectMetadata.setContentType(file.getContentType());
 
-	// TODO: 2024-07-15 Mo-Greene : 댓글 목록 무한스크롤
+		try {
+			amazonS3Client.putObject(new PutObjectRequest(bucket, BUCKET_THUMBNAIL + name, file.getInputStream(), objectMetadata)
+				.withCannedAcl(CannedAccessControlList.PublicRead)
+			);
+		} catch (IOException e) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패");
+		}
+
+		return BUCKET_THUMBNAIL + name;
+	}
 }
