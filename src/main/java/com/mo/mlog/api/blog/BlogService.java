@@ -13,7 +13,9 @@ import com.mo.mlog.persistence.post.Post;
 import com.mo.mlog.persistence.post.PostRepository;
 import com.mo.mlog.persistence.tag.Tag;
 import com.mo.mlog.persistence.tag.TagRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -47,7 +49,6 @@ public class BlogService {
 	@Transactional(readOnly = true)
 	public List<ListPostResponse> getPostList(Pageable pageable, SearchPostRequest request) {
 
-
 		return postRepository.getPostList(pageable, request);
 	}
 
@@ -72,8 +73,11 @@ public class BlogService {
 
 		Tag tag = tagRepository.findById(request.tagId()).orElseThrow(EntityException::new);
 
-		MultipartFile file = request.thumbnail();
-		String thumbnail = uploadFile(file);
+		String thumbnail = null;
+		if (request.thumbnail() != null && !request.thumbnail().isEmpty()) {
+			MultipartFile file = request.thumbnail();
+			thumbnail = uploadFile(file);
+		}
 
 		Post post = Post.builder()
 			.title(request.title())
@@ -113,8 +117,9 @@ public class BlogService {
 		objectMetadata.setContentType(file.getContentType());
 
 		try {
-			amazonS3Client.putObject(new PutObjectRequest(bucket, BUCKET_THUMBNAIL + name, file.getInputStream(), objectMetadata)
-				.withCannedAcl(CannedAccessControlList.PublicRead)
+			amazonS3Client.putObject(
+				new PutObjectRequest(bucket, BUCKET_THUMBNAIL + name, file.getInputStream(), objectMetadata)
+					.withCannedAcl(CannedAccessControlList.PublicRead)
 			);
 		} catch (IOException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패");

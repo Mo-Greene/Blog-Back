@@ -39,7 +39,8 @@ class BlogServiceTest {
 			"Test Title",
 			"Test Content",
 			"Test Content",
-			2L
+			2L,
+			null
 		);
 
 		tag = Tag.builder()
