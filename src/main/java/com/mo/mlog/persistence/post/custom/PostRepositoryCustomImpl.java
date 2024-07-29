@@ -1,21 +1,19 @@
 package com.mo.mlog.persistence.post.custom;
 
-import static com.mo.mlog.persistence.post.QPost.*;
-import static com.mo.mlog.persistence.tag.QTag.*;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.domain.Pageable;
-
 import com.mo.mlog.api.blog.dto.request.SearchPostRequest;
 import com.mo.mlog.api.blog.dto.response.DetailPostResponse;
 import com.mo.mlog.api.blog.dto.response.ListPostResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.mo.mlog.persistence.post.QPost.post;
+import static com.mo.mlog.persistence.tag.QTag.tag;
 
 @RequiredArgsConstructor
 public class PostRepositoryCustomImpl implements PostRepositoryCustom {
@@ -34,13 +32,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 											post.title.as("title"),
 											post.preview.as("preview"),
 											post.thumbnail.as("thumbnail"),
+											tag.id.as("tagId"),
 											tag.name.as("tagName"),
 											post.createdAt.as("createdAt")
 			))
 			.from(post)
 			.join(tag).on(post.tag.eq(tag))
 			.where(
-				ltPostId(request.lastPostId()),
+				ltIndex(request.lastIndex()),
 				searchTagId(request.tagId()),
 				searchTitle(request.title())
 			)
@@ -72,12 +71,12 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 	}
 
 	//게시글 no offset 페이지네이션
-	private BooleanExpression ltPostId(Long lastPostId) {
-		if (lastPostId == null) {
+	private BooleanExpression ltIndex(Long lastIndex) {
+		if (lastIndex == null) {
 			return null;
 		}
 
-		return post.id.lt(lastPostId);
+		return post.id.lt(lastIndex);
 	}
 
 	//검색조건 tagId

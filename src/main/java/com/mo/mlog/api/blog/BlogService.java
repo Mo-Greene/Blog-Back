@@ -9,13 +9,12 @@ import com.mo.mlog.api.blog.dto.request.SearchPostRequest;
 import com.mo.mlog.api.blog.dto.response.DetailPostResponse;
 import com.mo.mlog.api.blog.dto.response.ListPostResponse;
 import com.mo.mlog.common.exception.EntityException;
+import com.mo.mlog.common.util.GithubUtil;
 import com.mo.mlog.persistence.post.Post;
 import com.mo.mlog.persistence.post.PostRepository;
 import com.mo.mlog.persistence.tag.Tag;
 import com.mo.mlog.persistence.tag.TagRepository;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,6 +36,7 @@ public class BlogService {
 	private final TagRepository tagRepository;
 	private final PostRepository postRepository;
 	private final AmazonS3Client amazonS3Client;
+	private final GithubUtil githubUtil;
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
@@ -89,6 +89,9 @@ public class BlogService {
 			.build();
 
 		postRepository.save(post);
+
+		//깃헙 개인 리포 commit
+		githubUtil.commitGithub(request.title(), request.content());
 	}
 
 	/**

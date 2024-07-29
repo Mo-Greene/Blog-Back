@@ -16,14 +16,16 @@ public class ListPostResponse {
 	private String title;
 	private String preview;
 	private String thumbnail;
+	private Long tagId;
 	private String tagName;
 	private String createdAt;
 
-	public ListPostResponse(Long id, String title, String preview, String thumbnail, String tagName, LocalDateTime createdAt) {
+	public ListPostResponse(Long id, String title, String preview, String thumbnail, Long tagId, String tagName, LocalDateTime createdAt) {
 		this.id = id;
 		this.title = title;
 		this.preview = preview;
 		this.thumbnail = generateUrl(thumbnail).orElse(null);
+		this.tagId = tagId;
 		this.tagName = tagName;
 		this.createdAt = DateUtil.dateTimeFormat(createdAt);
 	}
