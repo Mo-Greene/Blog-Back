@@ -11,6 +11,7 @@ public class WebConfig {
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 
+		// TODO: 2024-08-01 Mo-Greene : Origin 변경 필요!
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {

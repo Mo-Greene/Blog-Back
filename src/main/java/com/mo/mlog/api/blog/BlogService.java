@@ -44,6 +44,15 @@ public class BlogService {
 	private static final String BUCKET_THUMBNAIL = "thumbnail/";
 
 	/**
+	 * 최근 게시글 조회
+	 */
+	@Transactional(readOnly = true)
+	public List<ListPostResponse> getPostLatestList() {
+
+		return postRepository.getPostLatestList();
+	}
+
+	/**
 	 * 게시글 전체조회 no offset 페이지네이션
 	 */
 	@Transactional(readOnly = true)

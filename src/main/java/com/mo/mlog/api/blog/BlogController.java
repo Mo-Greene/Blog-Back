@@ -19,6 +19,15 @@ public class BlogController {
 	private final BlogService blogService;
 
 	/**
+	 * 최근 게시글 조회
+	 */
+	@GetMapping("/latest")
+	public CommonResponse<?> getLatestPost() {
+
+		return CommonResponse.ok(blogService.getPostLatestList());
+	}
+
+	/**
 	 * 게시글 전체조회 no offset pagination
 	 */
 	@GetMapping
@@ -53,7 +62,7 @@ public class BlogController {
 	/**
 	 * 게시글 수정
 	 *
-	 * @param postId 게시글 pk
+	 * @param postId  게시글 pk
 	 * @param request 수정 게시글 정보
 	 */
 	@PatchMapping("/{postId}")

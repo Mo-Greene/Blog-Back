@@ -21,6 +21,29 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 	private final JPAQueryFactory factory;
 
 	/**
+	 * 최근 게시글
+	 */
+	@Override
+	public List<ListPostResponse> getPostLatestList() {
+
+		return factory
+			.select(Projections.constructor(ListPostResponse.class,
+				post.id.as("id"),
+				post.title.as("title"),
+				post.preview.as("preview"),
+				post.thumbnail.as("thumbnail"),
+				tag.id.as("tagId"),
+				tag.name.as("tagName"),
+				post.createdAt.as("createdAt")
+			))
+			.from(post)
+			.join(tag).on(post.tag.eq(tag))
+			.orderBy(post.id.desc())
+			.limit(3)
+			.fetch();
+	}
+
+	/**
 	 * 게시글 전체조회
 	 */
 	@Override
@@ -28,13 +51,13 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
 		return factory
 			.select(Projections.constructor(ListPostResponse.class,
-											post.id.as("id"),
-											post.title.as("title"),
-											post.preview.as("preview"),
-											post.thumbnail.as("thumbnail"),
-											tag.id.as("tagId"),
-											tag.name.as("tagName"),
-											post.createdAt.as("createdAt")
+				post.id.as("id"),
+				post.title.as("title"),
+				post.preview.as("preview"),
+				post.thumbnail.as("thumbnail"),
+				tag.id.as("tagId"),
+				tag.name.as("tagName"),
+				post.createdAt.as("createdAt")
 			))
 			.from(post)
 			.join(tag).on(post.tag.eq(tag))
@@ -57,17 +80,17 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 	public Optional<DetailPostResponse> findPostDetail(Long postId) {
 
 		return Optional.ofNullable(factory
-									   .select(Projections.constructor(DetailPostResponse.class,
-																	   post.id.as("id"),
-																	   tag.name.as("tagName"),
-																	   post.title.as("title"),
-																	   post.content.as("content"),
-																	   post.createdAt.as("createdAt")
-									   ))
-									   .from(post)
-									   .join(tag).on(post.tag.eq(tag))
-									   .where(post.id.eq(postId))
-									   .fetchOne());
+			.select(Projections.constructor(DetailPostResponse.class,
+				post.id.as("id"),
+				tag.name.as("tagName"),
+				post.title.as("title"),
+				post.content.as("content"),
+				post.createdAt.as("createdAt")
+			))
+			.from(post)
+			.join(tag).on(post.tag.eq(tag))
+			.where(post.id.eq(postId))
+			.fetchOne());
 	}
 
 	//게시글 no offset 페이지네이션
