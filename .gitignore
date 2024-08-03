@@ -1,6 +1,6 @@
 application-dev.yml
 application-aws.yml
-application-github.yml
+application-secret.yml
 
 .gradle
 build/

@@ -1,4 +1,4 @@
-package com.mo.mlog.common.feign.dto;
+package com.mo.mlog.common.feign.github.dto;
 
 import com.mo.mlog.common.util.DateUtil;
 import lombok.Builder;

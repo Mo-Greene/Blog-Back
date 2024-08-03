@@ -1,7 +1,7 @@
 package com.mo.mlog.common.util;
 
-import com.mo.mlog.common.feign.GithubFeign;
-import com.mo.mlog.common.feign.dto.CreateContentBodyRequest;
+import com.mo.mlog.common.feign.github.GithubFeign;
+import com.mo.mlog.common.feign.github.dto.CreateContentBodyRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

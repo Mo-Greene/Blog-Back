@@ -1,4 +1,4 @@
-package com.mo.mlog.common.feign;
+package com.mo.mlog.common.feign.github;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;

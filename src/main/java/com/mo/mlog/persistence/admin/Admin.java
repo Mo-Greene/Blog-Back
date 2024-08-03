@@ -1,7 +1,5 @@
 package com.mo.mlog.persistence.admin;
 
-import org.hibernate.annotations.Comment;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
 
 @Getter
 @Entity
@@ -18,11 +17,15 @@ import lombok.NoArgsConstructor;
 public class Admin {
 
 	@Id
-	@Column(length = 20)
-	@Comment("아이디")
-	private String username;
+	@Column(name = "provider_id")
+	@Comment("sns provider pk")
+	private Long providerId;
 
-	@Column(length = 150)
-	@Comment("비밀번호")
-	private String password;
+	@Column(length = 20, nullable = false)
+	@Comment("login name")
+	private String login;
+
+	@Column(length = 20, nullable = false)
+	@Comment("github node id")
+	private String nodeId;
 }

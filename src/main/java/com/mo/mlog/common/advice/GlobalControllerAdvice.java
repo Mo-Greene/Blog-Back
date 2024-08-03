@@ -1,5 +1,6 @@
 package com.mo.mlog.common.advice;
 
+import com.mo.mlog.common.exception.BaseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -17,10 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-	/**
-	 * http status : 400 AND result : FAIL 파라미터 에러
-	 * @param e MethodArgumentNotValidException
-	 */
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(BaseException.class)
+	public CommonResponse<?> onBaseException(BaseException e) {
+
+		log.error(e.getMessage());
+
+		return CommonResponse.fail(e.getMessage());
+	}
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public CommonResponse<?> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -29,9 +35,21 @@ public class GlobalControllerAdvice {
 		FieldError fieldError = bindingResult.getFieldError();
 		if (fieldError != null) {
 			String message = "Request Error " + fieldError.getField() + " = " + fieldError.getRejectedValue() + " (" + fieldError.getDefaultMessage() + ")";
+
+			log.error(message);
 			return CommonResponse.fail(message);
 		} else {
+
+			log.error(ErrorCode.COMMON_INVALID_PARAMETER.getErrorMessage());
 			return CommonResponse.fail(ErrorCode.COMMON_INVALID_PARAMETER.getErrorMessage());
 		}
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(RuntimeException.class)
+	public CommonResponse<?> onRuntimeException(RuntimeException e) {
+
+		log.error(e.getMessage());
+		return CommonResponse.fail(e.getMessage());
 	}
 }
