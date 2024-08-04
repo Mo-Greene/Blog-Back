@@ -1,16 +1,23 @@
 package com.mo.mlog.common.config;
 
+import com.mo.mlog.common.filter.JwtFilter;
+import com.mo.mlog.common.jwt.JwtAccessDeniedHandler;
+import com.mo.mlog.common.jwt.JwtAuthenticationEntryPoint;
+import com.mo.mlog.common.jwt.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +26,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 	private final CorsConfig corsConfig;
+	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private final JwtFilter jwtFilter;
 
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -38,11 +48,24 @@ public class SecurityConfig {
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
-			.authorizeHttpRequests(request -> request
-				.requestMatchers("/v1/login/**").permitAll()
-				.anyRequest().permitAll()
+			.exceptionHandling(exception -> exception
+				.accessDeniedHandler(jwtAccessDeniedHandler)
+				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 			)
+			.authorizeHttpRequests(this::configureAuthorization)
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();
+	}
+
+	/**
+	 * 허용 requestMatchers
+	 *
+	 * @param request request
+	 */
+	private void configureAuthorization(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry request) {
+		request
+			.requestMatchers(HttpMethod.POST, "/v1/blogs").hasRole(UserRole.ADMIN.toString())
+			.anyRequest().permitAll();
 	}
 
 }

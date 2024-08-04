@@ -5,6 +5,7 @@ import com.mo.mlog.common.feign.github.GithubFeign;
 import com.mo.mlog.common.feign.github.dto.GithubUserResponse;
 import com.mo.mlog.common.feign.oauth2.OAuth2Feign;
 import com.mo.mlog.common.feign.oauth2.dto.OAuth2ParamsRequest;
+import com.mo.mlog.common.jwt.JwtGenerator;
 import com.mo.mlog.persistence.admin.Admin;
 import com.mo.mlog.persistence.admin.AdminRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ public class LoginService {
 	private final AdminRepository adminRepository;
 	private final OAuth2Feign oAuth2Feign;
 	private final GithubFeign githubFeign;
+	private final JwtGenerator jwtGenerator;
 
 	@Value("${github.oauth2.client-id}")
 	private String clientId;
@@ -46,11 +48,14 @@ public class LoginService {
 
 		GithubUserResponse response = proceedGithubAuthorize(params);
 
-		validateAdmin(response);
+		if (isValidateAdmin(response)) {
 
-		UriComponentsBuilder redirectUrl = UriComponentsBuilder.fromUriString(REDIRECT_URL)
-				.queryParam("login", true);
-		httpServletResponse.sendRedirect(redirectUrl.toUriString());
+			String accessToken = jwtGenerator.tokenRedis(response.getId());
+
+			UriComponentsBuilder redirectUrl = UriComponentsBuilder.fromUriString(REDIRECT_URL)
+				.queryParam("access_token", accessToken);
+			httpServletResponse.sendRedirect(redirectUrl.toUriString());
+		}
 	}
 
 	/**
@@ -87,11 +92,14 @@ public class LoginService {
 	 *
 	 * @param response Github authorization response
 	 */
-	private void validateAdmin(GithubUserResponse response) {
+	private boolean isValidateAdmin(GithubUserResponse response) {
+
 		Admin admin = adminRepository.findById(response.getId()).orElseThrow(EntityException::new);
+
 		if (!Objects.equals(admin.getLogin(), response.getLogin())
 			&& !Objects.equals(admin.getNodeId(), response.getNode_id())) {
-			throw new IllegalArgumentException("Github User Validate Error");
+			return false;
 		}
+		return true;
 	}
 }

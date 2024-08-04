@@ -1,22 +1,60 @@
 package com.mo.mlog.common.jwt;
 
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import com.mo.mlog.common.jwt.token.JwtToken;
+import com.mo.mlog.common.jwt.token.JwtTokenRepository;
+import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.time.Duration;
+import java.util.Date;
+import java.util.UUID;
 
-@Slf4j
+import static com.mo.mlog.common.jwt.constant.JWT.CLAIM_KEY;
+
 @Component
+@RequiredArgsConstructor
 public class JwtGenerator {
 
-	private final Key key;
+	private final SecretKey key;
+	private final JwtTokenRepository jwtTokenRepository;
 
-	public JwtGenerator(@Value("${jwt.secret-key}") String secretKey) {
-		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-		this.key = Keys.hmacShaKeyFor(keyBytes);
+	/**
+	 * create Redis AccessToken
+	 *
+	 * @param userId github user PK
+	 */
+	public String tokenRedis(Long userId) {
+
+		UUID redisId = UUID.randomUUID();
+
+		String accessToken = generateToken(redisId);
+
+		JwtToken jwtToken = JwtToken.builder()
+			.id(String.valueOf(redisId))
+			.userId(userId)
+			.role(UserRole.ADMIN.toString())
+			.build();
+		jwtTokenRepository.save(jwtToken);
+
+		return accessToken;
 	}
 
+	/**
+	 * 토큰 생성
+	 */
+	public String generateToken(UUID redisId) {
+
+		Date now = new Date();
+		long currentMillis = now.getTime();
+		Date tokenExpire = new Date(currentMillis + Duration.ofDays(1).toMillis());
+
+		return Jwts.builder()
+			.claim(CLAIM_KEY, redisId)
+			.issuedAt(now)
+			.expiration(tokenExpire)
+			.signWith(key, Jwts.SIG.HS512)
+			.compact();
+	}
 }

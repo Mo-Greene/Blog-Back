@@ -16,7 +16,7 @@ public class LoginController {
 	private final LoginService loginService;
 
 	@GetMapping("/login/oauth2/code/github")
-	public CommonResponse<?> githubCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
+	public CommonResponse<?> afterLoginGithubCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
 
 		loginService.githubCallback(code, response);
 		return CommonResponse.ok();
