@@ -46,15 +46,17 @@ public class LoginService {
 
 		OAuth2ParamsRequest params = new OAuth2ParamsRequest(clientId, clientSecret, code);
 
-		GithubUserResponse response = proceedGithubAuthorize(params);
+		try {
+			GithubUserResponse response = proceedGithubAuthorize(params);
 
-		if (isValidateAdmin(response)) {
+			if (isValidateAdmin(response)) {
+				String accessToken = jwtGenerator.tokenRedis(response.getId());
+				sendRedirect(httpServletResponse, true, accessToken);
+			}
+			else sendRedirect(httpServletResponse, false, null);
 
-			String accessToken = jwtGenerator.tokenRedis(response.getId());
-
-			UriComponentsBuilder redirectUrl = UriComponentsBuilder.fromUriString(REDIRECT_URL)
-				.queryParam("access_token", accessToken);
-			httpServletResponse.sendRedirect(redirectUrl.toUriString());
+		} catch (EntityException e) {
+			sendRedirect(httpServletResponse, false, null);
 		}
 	}
 
@@ -101,5 +103,23 @@ public class LoginService {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Send Redirect
+	 *
+	 * @param httpServletResponse httpServletResponse
+	 * @param loginSuccess        로그인 성공 실패
+	 * @param accessToken         github token
+	 */
+	private void sendRedirect(HttpServletResponse httpServletResponse, boolean loginSuccess, String accessToken) throws IOException {
+
+		UriComponentsBuilder redirectUrl = UriComponentsBuilder.fromUriString(REDIRECT_URL)
+			.queryParam("login", loginSuccess);
+
+		if (loginSuccess) {
+			redirectUrl.queryParam("access_token", accessToken);
+		}
+		httpServletResponse.sendRedirect(redirectUrl.toUriString());
 	}
 }
