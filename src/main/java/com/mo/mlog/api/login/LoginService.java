@@ -50,7 +50,7 @@ public class LoginService {
 			GithubUserResponse response = proceedGithubAuthorize(params);
 
 			if (isValidateAdmin(response)) {
-				String accessToken = jwtGenerator.tokenRedis(response.getId());
+				String accessToken = jwtGenerator.saveTokenRedis(response.getId());
 				sendRedirect(httpServletResponse, true, accessToken);
 			}
 			else sendRedirect(httpServletResponse, false, null);

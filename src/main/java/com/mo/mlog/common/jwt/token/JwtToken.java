@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@RedisHash(value ="refresh", timeToLive = 10)
+@RedisHash(value ="refresh", timeToLive = 60 * 60 * 24)
 @Builder
 public class JwtToken {
 

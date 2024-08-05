@@ -28,6 +28,7 @@ import static com.mo.mlog.common.jwt.constant.JWT.CLAIM_KEY;
 public class JwtFilter extends OncePerRequestFilter {
 
 	private static final String AUTHORIZATION_HEADER = "Authorization";
+	private static final String USER_ROLE = "ROLE_" + UserRole.ADMIN;
 	private final JwtParser jwtParser;
 	private final JwtTokenRepository jwtTokenRepository;
 
@@ -42,7 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
 					JwtToken jwtToken = jwtTokenRepository.findById(id).orElse(null);
 					if (jwtToken != null) {
 						Long userId = jwtToken.getUserId();
-						Authentication authentication = jwtParser.getAuthentication(String.valueOf(userId), UserRole.ADMIN.toString());
+						Authentication authentication = jwtParser.getAuthentication(String.valueOf(userId), USER_ROLE);
 						SecurityContextHolder.getContext().setAuthentication(authentication);
 					}
 				}

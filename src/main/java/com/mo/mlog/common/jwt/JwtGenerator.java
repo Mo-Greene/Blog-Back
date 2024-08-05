@@ -25,7 +25,7 @@ public class JwtGenerator {
 	 *
 	 * @param userId github user PK
 	 */
-	public String tokenRedis(Long userId) {
+	public String saveTokenRedis(Long userId) {
 
 		UUID redisId = UUID.randomUUID();
 

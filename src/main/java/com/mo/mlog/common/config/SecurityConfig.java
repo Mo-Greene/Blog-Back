@@ -11,7 +11,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -52,20 +51,11 @@ public class SecurityConfig {
 				.accessDeniedHandler(jwtAccessDeniedHandler)
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 			)
-			.authorizeHttpRequests(this::configureAuthorization)
+			.authorizeHttpRequests(request -> request
+				.requestMatchers(HttpMethod.POST, "/blogs").hasRole(UserRole.ADMIN.toString())
+				.anyRequest().permitAll()
+			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();
 	}
-
-	/**
-	 * 허용 requestMatchers
-	 *
-	 * @param request request
-	 */
-	private void configureAuthorization(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry request) {
-		request
-			.requestMatchers(HttpMethod.POST, "/v1/blogs").hasRole(UserRole.ADMIN.toString())
-			.anyRequest().permitAll();
-	}
-
 }
