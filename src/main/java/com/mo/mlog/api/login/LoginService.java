@@ -48,13 +48,14 @@ public class LoginService {
 
 		try {
 			GithubUserResponse response = proceedGithubAuthorize(params);
+			boolean isValidAdmin = isValidateAdmin(response);
+			String accessToken = null;
 
-			if (isValidateAdmin(response)) {
-				String accessToken = jwtGenerator.saveTokenRedis(response.getId());
-				sendRedirect(httpServletResponse, true, accessToken);
+			if (isValidAdmin) {
+				accessToken = jwtGenerator.saveTokenRedis(response.getId());
 			}
-			else sendRedirect(httpServletResponse, false, null);
 
+			sendRedirect(httpServletResponse, isValidAdmin, accessToken);
 		} catch (EntityException e) {
 			sendRedirect(httpServletResponse, false, null);
 		}
@@ -98,11 +99,8 @@ public class LoginService {
 
 		Admin admin = adminRepository.findById(response.getId()).orElseThrow(EntityException::new);
 
-		if (!Objects.equals(admin.getLogin(), response.getLogin())
-			&& !Objects.equals(admin.getNodeId(), response.getNode_id())) {
-			return false;
-		}
-		return true;
+		return Objects.equals(admin.getLogin(), response.getLogin())
+			&& Objects.equals(admin.getNodeId(), response.getNode_id());
 	}
 
 	/**

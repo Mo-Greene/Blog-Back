@@ -44,7 +44,7 @@ public class JwtGenerator {
 	/**
 	 * 토큰 생성
 	 */
-	public String generateToken(UUID redisId) {
+	private String generateToken(UUID redisId) {
 
 		Date now = new Date();
 		long currentMillis = now.getTime();
