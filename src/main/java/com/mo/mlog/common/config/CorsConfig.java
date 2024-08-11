@@ -17,7 +17,7 @@ public class CorsConfig {
 		corsConfiguration.addAllowedHeader("*");
 		corsConfiguration.addAllowedMethod("*");
 		corsConfiguration.setAllowCredentials(true);
-		corsConfiguration.addAllowedOriginPattern("http://localhost:5173");
+		corsConfiguration.addAllowedOriginPattern("https://mo-greene.pro");
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", corsConfiguration);

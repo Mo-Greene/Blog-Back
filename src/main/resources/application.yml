@@ -4,7 +4,7 @@ server:
 
 spring:
   profiles:
-    include: dev, aws, secret
+    include: prod, aws, secret
 
 logging:
   level:
