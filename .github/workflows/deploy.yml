@@ -55,13 +55,18 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build -x test
       
-    - name: Upload to S3
-      run: aws s3 cp build/libs/mlog-0.0.1.jar s3://${{ secrets.S3_DEPLOY_BUCKET }}/app.jar
-
-    - name: Deploy to AWS EC2 from S3
+    - name: Upload and Deploy to AWS S3 and EC2
       run: |
-        aws deploy create-deployment \
+        #S3 Upload
+        aws deploy push \
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-          --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-          --s3-location bucket=${{ secrets.S3_DEPLOY_BUCKET }},key=app.jar,bundleType=jar
+          --ignore-hidden-files \
+          --s3-location s3://${{ secrets.S3_DEPLOY_BUCKET }}/app.zip \
+          --source .
+
+        #EC2 Deploy
+        aws deploy create-deployment \
+              --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+              --deployment-config-name CodeDeployDefault.AllAtOnce \
+              --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+              --s3-location bucket=${{ secrets.S3_DEPLOY_BUCKET }},key=app-deploy.zip,bundleType=zip
