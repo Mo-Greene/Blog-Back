@@ -78,6 +78,11 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.named('jar') {
+jar {
     enabled = false
+}
+
+bootJar {
+    enabled = true
+    archiveFileName = 'app.jar'
 }
