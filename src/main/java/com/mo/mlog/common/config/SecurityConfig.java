@@ -47,6 +47,7 @@ public class SecurityConfig {
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 			)
 			.authorizeHttpRequests(request -> request
+				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(HttpMethod.POST, "/blogs").hasRole(UserRole.ADMIN.toString())
 				.anyRequest().permitAll()
 			)
