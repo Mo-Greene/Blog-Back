@@ -69,4 +69,4 @@ jobs:
               --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
               --deployment-config-name CodeDeployDefault.AllAtOnce \
               --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-              --s3-location bucket=${{ secrets.S3_DEPLOY_BUCKET }},key=app-deploy.zip,bundleType=zip
+              --s3-location bucket=${{ secrets.S3_DEPLOY_BUCKET }},key=app.zip,bundleType=zip
