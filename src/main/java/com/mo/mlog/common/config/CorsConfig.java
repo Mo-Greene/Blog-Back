@@ -16,7 +16,7 @@ public class CorsConfig {
 
 		corsConfiguration.addAllowedHeader("*");
 		corsConfiguration.addAllowedMethod("*");
-		corsConfiguration.addAllowedOriginPattern("https://*.mo-greene.pro");
+		corsConfiguration.addAllowedOriginPattern("https://mo-greene.pro");
 		corsConfiguration.setMaxAge(3600L);
 		corsConfiguration.setAllowCredentials(true);
 
