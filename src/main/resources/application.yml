@@ -14,11 +14,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-logging:
-  level:
-    org:
-      hibernate:
-        orm:
-          jdbc:
-            bind: trace
