@@ -1,7 +1,6 @@
 package com.mo.mlog.api.blog;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.mo.mlog.api.blog.dto.request.PostRequest;
@@ -131,7 +130,6 @@ public class BlogService {
 		try {
 			amazonS3Client.putObject(
 				new PutObjectRequest(bucket, BUCKET_THUMBNAIL + name, file.getInputStream(), objectMetadata)
-					.withCannedAcl(CannedAccessControlList.PublicRead)
 			);
 		} catch (IOException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패");
