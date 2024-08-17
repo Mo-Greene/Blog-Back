@@ -1,63 +1,58 @@
 package com.mo.mlog.api.blog;
 
-import com.mo.mlog.api.blog.dto.request.PostRequest;
-import com.mo.mlog.persistence.post.Post;
+import com.mo.mlog.api.blog.dto.request.SearchPostRequest;
+import com.mo.mlog.api.blog.dto.response.ListPostResponse;
 import com.mo.mlog.persistence.post.PostRepository;
-import com.mo.mlog.persistence.tag.Tag;
-import com.mo.mlog.persistence.tag.TagRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BlogServiceTest {
 
+	@InjectMocks
+	private BlogService blogService;
 	@Mock
 	private PostRepository postRepository;
 
-	@Mock
-	private TagRepository tagRepository;
+	@Test
+	@DisplayName("최근 게시글 조회")
+	void getPostLatestList() {
+		//given
+		List<ListPostResponse> expectedResponse = List.of(mock(ListPostResponse.class));
+		when(postRepository.getPostLatestList()).thenReturn(expectedResponse);
 
-	@InjectMocks
-	private BlogService blogService;
+		//when
+		List<ListPostResponse> result = blogService.getPostLatestList();
 
-	private PostRequest postRequest;
-	private Tag tag;
-
-	@BeforeEach
-	void setUp() {
-		postRequest = new PostRequest(
-			"Test Title",
-			"Test Content",
-			"Test Content",
-			2L,
-			null
-		);
-
-		tag = Tag.builder()
-			.name("SpringBoot")
-			.build();
+		//then
+		verify(postRepository, times(1)).getPostLatestList();
+		assertEquals(expectedResponse, result);
 	}
 
 	@Test
-	void testSavePost() {
-		when(tagRepository.findById(eq(2L))).thenReturn(Optional.of(tag));
+	@DisplayName("게시글 전체 조회")
+	void getPostList() {
+		//given
+		Pageable pageable = mock(Pageable.class);
+		SearchPostRequest searchPostRequest = mock(SearchPostRequest.class);
+		List<ListPostResponse> expectedResponse = List.of(mock(ListPostResponse.class));
 
-		blogService.savePost(postRequest);
+		when(postRepository.getPostList(pageable, searchPostRequest)).thenReturn(expectedResponse);
 
-		verify(tagRepository).findById(eq(2L));
-		verify(postRepository).save(any(Post.class));
-		verifyNoMoreInteractions(tagRepository, postRepository);
+		List<ListPostResponse> result = blogService.getPostList(pageable, searchPostRequest);
 
+		verify(postRepository, times(1)).getPostList(pageable, searchPostRequest);
+		assertEquals(expectedResponse, result);
 	}
 
 }

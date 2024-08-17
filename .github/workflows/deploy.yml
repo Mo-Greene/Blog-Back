@@ -53,7 +53,7 @@ jobs:
       run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-secret.yml src/main/resources/application-secret.yml
 
     - name: Build with Gradle
-      run: ./gradlew build -x test
+      run: ./gradlew build
       
     - name: Upload and Deploy to AWS S3 and EC2
       run: |
