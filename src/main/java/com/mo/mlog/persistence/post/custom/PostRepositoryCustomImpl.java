@@ -62,7 +62,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 			.from(post)
 			.join(tag).on(post.tag.eq(tag))
 			.where(
-				ltIndex(request.lastIndex()),
 				searchTagId(request.tagId()),
 				searchTitle(request.title())
 			)
@@ -91,15 +90,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 			.join(tag).on(post.tag.eq(tag))
 			.where(post.id.eq(postId))
 			.fetchOne());
-	}
-
-	//게시글 no offset 페이지네이션
-	private BooleanExpression ltIndex(Long lastIndex) {
-		if (lastIndex == null) {
-			return null;
-		}
-
-		return post.id.lt(lastIndex);
 	}
 
 	//검색조건 tagId

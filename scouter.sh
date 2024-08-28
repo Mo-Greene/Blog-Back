@@ -1,0 +1,1 @@
+java -javaagent:scouter/scouter.agent.jar -jar build/libs/*.jar
