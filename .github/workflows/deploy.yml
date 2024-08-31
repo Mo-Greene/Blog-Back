@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   CODE_DEPLOY_APPLICATION_NAME: blog-was
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: WAS_APP
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: WAS_BLOG
 
 permissions:
   contents: read
