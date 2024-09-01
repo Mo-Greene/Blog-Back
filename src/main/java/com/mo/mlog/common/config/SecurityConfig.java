@@ -3,9 +3,11 @@ package com.mo.mlog.common.config;
 import com.mo.mlog.common.filter.JwtFilter;
 import com.mo.mlog.common.jwt.JwtAccessDeniedHandler;
 import com.mo.mlog.common.jwt.JwtAuthenticationEntryPoint;
+import com.mo.mlog.common.jwt.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -44,7 +46,7 @@ public class SecurityConfig {
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 			)
 			.authorizeHttpRequests(request -> request
-//				.requestMatchers(HttpMethod.POST, "/blogs").hasRole(UserRole.ADMIN.toString())
+				.requestMatchers(HttpMethod.POST, "/blogs").hasRole(UserRole.ADMIN.toString())
 				.anyRequest().permitAll()
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
