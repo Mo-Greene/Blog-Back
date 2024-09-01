@@ -65,7 +65,7 @@ public class BlogService {
 	/**
 	 * 게시글 상세조회
 	 *
-	 * @param postId 게시글 pk
+	 * @param slug 제목 슬러그
 	 */
 	@Transactional(readOnly = true)
 	public DetailPostResponse findPostBySlug(String slug) {

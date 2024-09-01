@@ -37,7 +37,7 @@ public class BlogController {
 	/**
 	 * 게시글 상세조회
 	 *
-	 * @param postId 게시글 pk
+	 * @param slug 제목 슬러그
 	 */
 	@GetMapping("/{slug}")
 	public CommonResponse<?> findPostDetail(@PathVariable String slug) {

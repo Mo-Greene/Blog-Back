@@ -75,7 +75,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 	/**
 	 * 게시글 상세조회
 	 *
-	 * @param postId 게시글 pk
+	 * @param encodeSlug 게시글 슬러그
 	 */
 	@Override
 	public Optional<DetailPostResponse> findPostDetail(String encodeSlug) {
