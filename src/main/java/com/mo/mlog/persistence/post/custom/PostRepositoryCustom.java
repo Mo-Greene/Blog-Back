@@ -14,6 +14,6 @@ public interface PostRepositoryCustom {
 
 	List<ListPostResponse> getPostList(Pageable pageable, SearchPostRequest request);
 
-	Optional<DetailPostResponse> findPostDetail(Long postId);
+	Optional<DetailPostResponse> findPostDetail(String encodeSlug);
 
 }

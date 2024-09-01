@@ -39,10 +39,10 @@ public class BlogController {
 	 *
 	 * @param postId 게시글 pk
 	 */
-	@GetMapping("/{postId}")
-	public CommonResponse<?> findPostDetail(@PathVariable Long postId) {
+	@GetMapping("/{slug}")
+	public CommonResponse<?> findPostDetail(@PathVariable String slug) {
 
-		return CommonResponse.ok(blogService.findPostById(postId));
+		return CommonResponse.ok(blogService.findPostBySlug(slug));
 	}
 
 	/**

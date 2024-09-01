@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,9 +68,10 @@ public class BlogService {
 	 * @param postId 게시글 pk
 	 */
 	@Transactional(readOnly = true)
-	public DetailPostResponse findPostById(Long postId) {
+	public DetailPostResponse findPostBySlug(String slug) {
 
-		return postRepository.findPostDetail(postId).orElseThrow(EntityException::new);
+		String encodeSlug = URLEncoder.encode(slug, StandardCharsets.UTF_8);
+		return postRepository.findPostDetail(encodeSlug).orElseThrow(EntityException::new);
 	}
 
 	/**

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 
+import static com.mo.mlog.common.util.UrlSlugUtil.generateSlug;
+
 @Getter
 @Entity
 @Table(name = "post")
@@ -46,7 +48,12 @@ public class Post extends AbstractEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tag_id", nullable = false)
+	@Comment("태그 pk")
 	private Tag tag;
+
+	@Column(unique = true, nullable = false, columnDefinition = "TEXT")
+	@Comment("슬러그")
+	private String slug;
 
 	@Builder
 	public Post(String title, String content, String plainContent, String preview, String thumbnail, Tag tag) {
@@ -56,10 +63,12 @@ public class Post extends AbstractEntity {
 		this.preview = preview;
 		this.thumbnail = thumbnail;
 		this.tag = tag;
+		this.slug = generateSlug(title);
 	}
 
 	/**
 	 * 게시글 업데이트
+	 *
 	 * @param request 게시글 수정 정보
 	 */
 	public void updatePost(PostRequest request) {

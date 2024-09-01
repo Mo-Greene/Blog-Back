@@ -32,6 +32,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 				post.title.as("title"),
 				post.preview.as("preview"),
 				post.thumbnail.as("thumbnail"),
+				post.slug.as("slug"),
 				tag.id.as("tagId"),
 				tag.name.as("tagName"),
 				post.createdAt.as("createdAt")
@@ -55,6 +56,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 				post.title.as("title"),
 				post.preview.as("preview"),
 				post.thumbnail.as("thumbnail"),
+				post.slug.as("slug"),
 				tag.id.as("tagId"),
 				tag.name.as("tagName"),
 				post.createdAt.as("createdAt")
@@ -76,7 +78,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 	 * @param postId 게시글 pk
 	 */
 	@Override
-	public Optional<DetailPostResponse> findPostDetail(Long postId) {
+	public Optional<DetailPostResponse> findPostDetail(String encodeSlug) {
 
 		return Optional.ofNullable(factory
 			.select(Projections.constructor(DetailPostResponse.class,
@@ -84,11 +86,12 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 				tag.name.as("tagName"),
 				post.title.as("title"),
 				post.content.as("content"),
+				post.slug.as("slug"),
 				post.createdAt.as("createdAt")
 			))
 			.from(post)
 			.join(tag).on(post.tag.eq(tag))
-			.where(post.id.eq(postId))
+			.where(post.slug.eq(encodeSlug))
 			.fetchOne());
 	}
 
