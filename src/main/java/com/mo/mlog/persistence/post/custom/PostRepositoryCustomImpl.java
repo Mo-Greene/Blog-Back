@@ -62,8 +62,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 				post.createdAt.as("createdAt")
 			))
 			.from(post)
-			.join(tag).on(post.tag.eq(tag))
+			.leftJoin(tag).on(post.tag.eq(tag))
 			.where(
+				ltPostId(request.cursor()),
 				searchTagId(request.tagId()),
 				searchTitle(request.title())
 			)
@@ -93,6 +94,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 			.join(tag).on(post.tag.eq(tag))
 			.where(post.slug.eq(encodeSlug))
 			.fetchOne());
+	}
+
+	//no offset 검색조건
+	private BooleanExpression ltPostId(Long cursor) {
+		if (cursor == null) {
+			return null;
+		}
+		return post.id.lt(cursor);
 	}
 
 	//검색조건 tagId
