@@ -24,8 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,8 +69,7 @@ public class BlogService {
 	@Transactional(readOnly = true)
 	public DetailPostResponse findPostBySlug(String slug) {
 
-		String encodeSlug = URLEncoder.encode(slug, StandardCharsets.UTF_8);
-		return postRepository.findPostDetail(encodeSlug).orElseThrow(EntityException::new);
+		return postRepository.findPostDetail(slug).orElseThrow(EntityException::new);
 	}
 
 	/**

@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.mo.mlog.common.util.UrlSlugUtil.decodeSlug;
-
 @Getter
 @NoArgsConstructor
 public class ListPostResponse {
@@ -29,7 +27,7 @@ public class ListPostResponse {
 		this.title = title;
 		this.preview = preview;
 		this.thumbnail = generateUrl(thumbnail).orElse(null);
-		this.slug = decodeSlug(slug);
+		this.slug = slug;
 		this.tagId = tagId;
 		this.tagName = tagName;
 		this.createdAt = DateUtil.dateTimeFormat(createdAt);
