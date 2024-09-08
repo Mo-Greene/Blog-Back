@@ -5,9 +5,12 @@ import com.mo.mlog.api.blog.dto.response.DetailPostResponse;
 import com.mo.mlog.api.blog.dto.response.ListPostResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,9 +51,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 	 * 게시글 전체조회
 	 */
 	@Override
-	public List<ListPostResponse> getPostList(Pageable pageable, SearchPostRequest request) {
+	public Page<ListPostResponse> getPostList(Pageable pageable, SearchPostRequest request) {
 
-		return factory
+		List<ListPostResponse> query = factory
 			.select(Projections.constructor(ListPostResponse.class,
 				post.id.as("id"),
 				post.title.as("title"),
@@ -71,6 +74,18 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 			.orderBy(post.id.desc())
 			.limit(pageable.getPageSize())
 			.fetch();
+
+		JPAQuery<Long> count = factory
+			.select(post.count())
+			.from(post)
+			.leftJoin(tag).on(post.tag.eq(tag))
+			.where(
+				ltPostId(request.cursor()),
+				searchTagId(request.tagId()),
+				searchTitle(request.title())
+			);
+
+		return PageableExecutionUtils.getPage(query, pageable, count::fetchOne);
 	}
 
 	/**
