@@ -52,6 +52,14 @@ jobs:
     - name: Download application-secret.yml from S3
       run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-secret.yml src/main/resources/application-secret.yml
 
+    - name: Set Scouter Configuration
+      run: |
+        echo "hook_method_patterns=com.mo.mlog.*.*" > scouter/conf/scouter.conf
+        echo "net_collector_ip=${{ secrets.SCOUTER_NET_COLLECTOR_IP }}" >> scouter/conf/scouter.conf
+        echo "net_collector_udp_port=${{ secrets.SCOUTER_NET_COLLECTOR_PORT }}" >> scouter/conf/scouter.conf
+        echo "net_collector_tcp_port=${{ secrets.SCOUTER_NET_COLLECTOR_PORT }}" >> scouter/conf/scouter.conf
+
+
     - name: Build with Gradle
       run: ./gradlew build
       
