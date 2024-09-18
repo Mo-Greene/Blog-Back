@@ -65,7 +65,7 @@ public class BlogService {
 	public void savePost(PostRequest request) {
 		try {
 			//깃헙 개인 리포 commit
-			blogAsync.commitGithub(request.title(), request.content());
+			blogAsync.commitGithub(request.title(), request.plainContent());
 
 			Tag tag = tagRepository.findById(request.tagId()).orElseThrow(EntityException::new);
 
