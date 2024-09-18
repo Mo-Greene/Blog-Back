@@ -72,7 +72,7 @@ class BlogServiceTest {
 		blogService.savePost(request);
 
 		//then
-		verify(blogAsync, times(1)).commitGithub("Sample Title", "Sample Content");
+		verify(blogAsync, times(1)).commitGithub("Sample Title", "Sample Plain Content");
 		verify(blogAsync, times(1)).uploadFile(thumbnailMock);
 		verify(postRepository, times(1)).save(postCaptor.capture());
 		Post savedPost = postCaptor.getValue();
