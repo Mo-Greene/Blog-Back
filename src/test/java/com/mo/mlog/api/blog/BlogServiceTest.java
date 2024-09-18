@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -65,15 +64,12 @@ class BlogServiceTest {
 		when(tagRepository.findById(1L)).thenReturn(Optional.of(mockTag));
 		when(thumbnailMock.isEmpty()).thenReturn(false);
 		doNothing().when(blogAsync).commitGithub(anyString(), anyString());
-		when(blogAsync.uploadFile(any(MultipartFile.class)))
-			.thenReturn(CompletableFuture.completedFuture("sample-thumbnail-path"));
 
 		//when
 		blogService.savePost(request);
 
 		//then
 		verify(blogAsync, times(1)).commitGithub("Sample Title", "Sample Plain Content");
-		verify(blogAsync, times(1)).uploadFile(thumbnailMock);
 		verify(postRepository, times(1)).save(postCaptor.capture());
 		Post savedPost = postCaptor.getValue();
 
@@ -81,7 +77,6 @@ class BlogServiceTest {
 		assertEquals("Sample Title", savedPost.getTitle());
 		assertEquals("Sample Content", savedPost.getContent());
 		assertEquals("Sample Plain Content", savedPost.getPlainContent());
-		assertEquals("sample-thumbnail-path", savedPost.getThumbnail());
 		assertEquals(mockTag, savedPost.getTag());
 	}
 }

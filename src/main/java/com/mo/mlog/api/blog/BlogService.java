@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +26,8 @@ public class BlogService {
 	private final TagRepository tagRepository;
 	private final PostRepository postRepository;
 	private final BlogAsync blogAsync;
+
+	private static final String BUCKET_THUMBNAIL = "thumbnail/";
 
 	/**
 	 * 최근 게시글 조회
@@ -72,8 +74,8 @@ public class BlogService {
 			String thumbnail = null;
 			if (request.thumbnail() != null && !request.thumbnail().isEmpty()) {
 				MultipartFile file = request.thumbnail();
-				CompletableFuture<String> futureThumbnail = blogAsync.uploadFile(file);
-				thumbnail = futureThumbnail.join();
+				thumbnail = BUCKET_THUMBNAIL + UUID.randomUUID();
+				blogAsync.uploadFile(thumbnail, file);
 			}
 
 			var post = Post.toPostEntity(request, tag, thumbnail);

@@ -14,8 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -28,30 +26,25 @@ public class BlogAsync {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
-	private static final String BUCKET_THUMBNAIL = "thumbnail/";
-
 	/**
 	 * 썸네일 파일 업로드
 	 *
 	 * @param file 썸네일 파일
 	 */
 	@Async
-	public CompletableFuture<String> uploadFile(MultipartFile file) {
+	public void uploadFile(String objectName, MultipartFile file) {
 
-		String name = String.valueOf(UUID.randomUUID());
 		ObjectMetadata objectMetadata = new ObjectMetadata();
 		objectMetadata.setContentLength(file.getSize());
 		objectMetadata.setContentType(file.getContentType());
 
 		try {
 			amazonS3Client.putObject(
-				new PutObjectRequest(bucket, BUCKET_THUMBNAIL + name, file.getInputStream(), objectMetadata)
+				new PutObjectRequest(bucket, objectName, file.getInputStream(), objectMetadata)
 			);
 		} catch (IOException e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패");
 		}
-
-		return CompletableFuture.completedFuture(BUCKET_THUMBNAIL + name);
 	}
 
 	/**
