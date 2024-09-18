@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 
+import static com.mo.mlog.common.util.PreviewTextUtil.previewText;
 import static com.mo.mlog.common.util.UrlSlugUtil.generateSlug;
 
 @Getter
@@ -64,6 +65,24 @@ public class Post extends AbstractEntity {
 		this.thumbnail = thumbnail;
 		this.tag = tag;
 		this.slug = generateSlug(title);
+	}
+
+	/**
+	 * to Entity
+	 *
+	 * @param request   PostRequest
+	 * @param tag       Tag
+	 * @param thumbnail Thumbnail name
+	 */
+	public static Post toPostEntity(PostRequest request, Tag tag, String thumbnail) {
+		return Post.builder()
+			.title(request.title())
+			.content(request.content())
+			.plainContent(request.plainContent())
+			.preview(previewText(request.plainContent()))
+			.tag(tag)
+			.thumbnail(thumbnail)
+			.build();
 	}
 
 	/**
