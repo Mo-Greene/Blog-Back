@@ -66,9 +66,6 @@ public class BlogService {
 	@Transactional
 	public void savePost(PostRequest request) {
 		try {
-			//깃헙 개인 리포 commit
-			blogAsync.commitGithub(request.title(), request.plainContent());
-
 			Tag tag = tagRepository.findById(request.tagId()).orElseThrow(EntityException::new);
 
 			String thumbnail = null;
@@ -80,6 +77,8 @@ public class BlogService {
 
 			var post = Post.toPostEntity(request, tag, thumbnail);
 			postRepository.save(post);
+
+			blogAsync.commitGithub(request.title(), request.plainContent());
 
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
