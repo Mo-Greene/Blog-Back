@@ -25,9 +25,13 @@ pipeline {
                         sh "cp $AWS_YML /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-aws.yml"
                         sh "cp $PROD_YML /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-prod.yml"
                         sh "cp $SECRET_YML /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-secret.yml"
+
+                        sh "chmod 755 /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-aws.yml"
+                        sh "chmod 755 /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-prod.yml"
+                        sh "chmod 755 /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-secret.yml"
                     }
                 }
-                echo 'copy yml'
+                echo 'copy yml and change permissions'
             }
         }
 
