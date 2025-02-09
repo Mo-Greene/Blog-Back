@@ -1,2 +1,3 @@
 # Mo-Greene Blog
-Test Jenkins File
+
+Jenkins 설정 추가
