@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         gradle 'gradle'
+        jdk ("jdk21")
     }
 
     environment {
