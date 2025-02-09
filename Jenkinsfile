@@ -22,7 +22,7 @@ pipeline {
                     file(credentialsId: 'application-secret', variable: 'SECRET_YML')
                 ]) {
                     script {
-                        sh "sudo chmod -R 755 /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources"
+                        sh "chmod -R 755 /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources"
 
                         sh "cp $AWS_YML /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-aws.yml"
                         sh "cp $PROD_YML /var/lib/jenkins/workspace/mo-greene-blog_main/src/main/resources/application-prod.yml"
