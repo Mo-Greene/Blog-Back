@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: mogreene-app
+    image: 43.201.250.140/mo-greene-blog:latest
     container_name: app
     ports:
       - "8080:8080"

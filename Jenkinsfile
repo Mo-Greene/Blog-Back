@@ -5,6 +5,13 @@ pipeline {
         gradle 'gradle'
     }
 
+    environment {
+        REGISTRY_URL = 'http://43.201.250.140'
+        REGISTRY_CREDENTIALS = 'docker-registry'
+        IMAGE_NAME = 'mo-greene-blog'
+        IMAGE_TAG = 'latest'
+    }
+
     stages {
 
         stage('copy yml') {
@@ -21,6 +28,40 @@ pipeline {
                     }
                 }
                 echo 'copy yml'
+            }
+        }
+
+        stage('Build Jar') {
+            steps {
+                script {
+                    sh './gradlew clean build'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
+            }
+        }
+
+        stage('Login to Docker Registry') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: REGISTRY_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        sh "echo $DOCKER_PASS | docker login $REGISTRY_URL -u $DOCKER_USER --password-stdin"
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
+                }
             }
         }
 
