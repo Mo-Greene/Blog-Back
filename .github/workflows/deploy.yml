@@ -1,72 +1,72 @@
-name: Deploy Spring Boot Application
-
-on:
-  push:
-    branches:
-      - main
-
-env:
-  AWS_REGION: ap-northeast-2
-  CODE_DEPLOY_APPLICATION_NAME: blog-was
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: WAS-BLOG
-
-permissions:
-  contents: read
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up JDK 21
-      uses: actions/setup-java@v2
-      with:
-        java-version: '21'
-        distribution: adopt
-
-    - name: Cache Gradle dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-
-    - name: Set executable permission for gradlew
-      run: chmod +x ./gradlew
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - name: Download application-prod.yml from S3
-      run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-prod.yml src/main/resources/application-prod.yml
-
-    - name: Download application-aws.yml from S3
-      run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-aws.yml src/main/resources/application-aws.yml
-
-    - name: Download application-secret.yml from S3
-      run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-secret.yml src/main/resources/application-secret.yml
-
-    - name: Build with Gradle
-      run: ./gradlew build
-      
-    - name: Upload and Deploy to AWS S3 and EC2
-      run: |
-        #S3 Upload
-        aws deploy push \
-          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-          --ignore-hidden-files \
-          --s3-location s3://${{ secrets.S3_DEPLOY_BUCKET }}/app.zip \
-          --source .
-
-        #EC2 Deploy
-        aws deploy create-deployment \
-              --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-              --deployment-config-name CodeDeployDefault.AllAtOnce \
-              --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-              --s3-location bucket=${{ secrets.S3_DEPLOY_BUCKET }},key=app.zip,bundleType=zip
+#name: Deploy Spring Boot Application
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#env:
+#  AWS_REGION: ap-northeast-2
+#  CODE_DEPLOY_APPLICATION_NAME: blog-was
+#  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: WAS-BLOG
+#
+#permissions:
+#  contents: read
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - name: Checkout code
+#      uses: actions/checkout@v2
+#
+#    - name: Set up JDK 21
+#      uses: actions/setup-java@v2
+#      with:
+#        java-version: '21'
+#        distribution: adopt
+#
+#    - name: Cache Gradle dependencies
+#      uses: actions/cache@v3
+#      with:
+#        path: ~/.gradle/caches
+#        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+#
+#    - name: Set executable permission for gradlew
+#      run: chmod +x ./gradlew
+#
+#    - name: Configure AWS credentials
+#      uses: aws-actions/configure-aws-credentials@v1
+#      with:
+#        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        aws-region: ${{ env.AWS_REGION }}
+#
+#    - name: Download application-prod.yml from S3
+#      run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-prod.yml src/main/resources/application-prod.yml
+#
+#    - name: Download application-aws.yml from S3
+#      run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-aws.yml src/main/resources/application-aws.yml
+#
+#    - name: Download application-secret.yml from S3
+#      run: aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/application-secret.yml src/main/resources/application-secret.yml
+#
+#    - name: Build with Gradle
+#      run: ./gradlew build
+#
+#    - name: Upload and Deploy to AWS S3 and EC2
+#      run: |
+#        #S3 Upload
+#        aws deploy push \
+#          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+#          --ignore-hidden-files \
+#          --s3-location s3://${{ secrets.S3_DEPLOY_BUCKET }}/app.zip \
+#          --source .
+#
+#        #EC2 Deploy
+#        aws deploy create-deployment \
+#              --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+#              --deployment-config-name CodeDeployDefault.AllAtOnce \
+#              --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+#              --s3-location bucket=${{ secrets.S3_DEPLOY_BUCKET }},key=app.zip,bundleType=zip
