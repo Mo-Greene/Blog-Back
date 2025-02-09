@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        REGISTRY_URL = 'http://43.201.250.140:5000'
+        REGISTRY_URL = '43.201.250.140:5000'
         REGISTRY_CREDENTIALS = 'docker-registry'
         IMAGE_NAME = 'mo-greene-blog'
         IMAGE_TAG = 'latest'
